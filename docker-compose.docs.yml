@@ -1,0 +1,16 @@
+services:
+  docs:
+    image: pharmacy_management_system_local_docs
+    container_name: pharmacy_management_system_local_docs
+    build:
+      context: .
+      dockerfile: ./compose/local/docs/Dockerfile
+    env_file:
+      - ./.envs/.local/.django
+    volumes:
+      - ./docs:/docs:z
+      - ./config:/app/config:z
+      - ./pharmacy_management_system:/app/pharmacy_management_system:z
+    ports:
+      - '9000:9000'
+    command: /start-docs
