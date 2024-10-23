@@ -1,46 +1,95 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.messages.views import SuccessMessageMixin
-from django.db.models import QuerySet
-from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
-from django.views.generic import DetailView
-from django.views.generic import RedirectView
-from django.views.generic import UpdateView
+from django.contrib.auth import get_user_model
+from drf_spectacular.utils import extend_schema
+from rest_framework import generics
+from rest_framework import serializers
+from rest_framework import status
+from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
+from users.permissions import IsPatient
+from users.permissions import IsPharmacist
 
-from pharmacy_management_system.users.models import User
+from .models import User
+from .serializers import UserRegistrationSerializer
+from .serializers import UserSerializer
 
-
-class UserDetailView(LoginRequiredMixin, DetailView):
-    model = User
-    slug_field = "username"
-    slug_url_kwarg = "username"
-
-
-user_detail_view = UserDetailView.as_view()
-
-
-class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
-    model = User
-    fields = ["name"]
-    success_message = _("Information successfully updated")
-
-    def get_success_url(self) -> str:
-        assert self.request.user.is_authenticated  # type guard
-        return self.request.user.get_absolute_url()
-
-    def get_object(self, queryset: QuerySet | None=None) -> User:
-        assert self.request.user.is_authenticated  # type guard
-        return self.request.user
+User = get_user_model()
 
 
-user_update_view = UserUpdateView.as_view()
+class UserRegistrationView(generics.CreateAPIView):
+    serializer_class = UserRegistrationSerializer
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        # Validate and save the user
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+
+        # Generate JWT tokens for the new user
+        refresh = RefreshToken.for_user(user)
+        access = refresh.access_token
+
+        # Return the user data and the access/refresh tokens
+        return Response(
+            {
+                "user": serializer.data,  # User data
+                "refresh": str(refresh),  # Refresh token
+                "access": str(access),    # Access token
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    class CustomTokenObtainPairViewOutputSerializer(serializers.Serializer):
+        refresh = serializers.CharField()
+        access = serializers.CharField()
+        role = serializers.CharField()
+        username = serializers.CharField()
+
+    class TokenSerializer(TokenObtainPairSerializer):
+        @classmethod
+        def get_token(cls, user: User):
+            token = super().get_token(user)
+            # Adding custom claims (role and username)
+            token["name"] = user.name
+            token["username"] = user.username
+            token["role"] = "patient" if user.is_patient else "pharmacist"
+            return token
+
+    serializer_class = TokenSerializer
+
+    @extend_schema(
+        request=TokenObtainPairSerializer,
+        responses=CustomTokenObtainPairViewOutputSerializer,
+    )
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        user = User.objects.get(username=request.data["username"])
+        # Adding role and username in response
+        response.data.update(
+            {
+                "role": "patient" if user.is_patient else "pharmacist",
+                "username": user.username,
+            }
+        )
+        return response
 
 
-class UserRedirectView(LoginRequiredMixin, RedirectView):
-    permanent = False
+class UserDetails(APIView):
+    permission_classes = [IsAuthenticated]
 
-    def get_redirect_url(self) -> str:
-        return reverse("users:detail", kwargs={"username": self.request.user.username})
-
-
-user_redirect_view = UserRedirectView.as_view()
+    def get(self, request, format=None):
+        """
+        Return a User Data.
+        """
+        return Response(
+            UserSerializer(instance=request.user).data,
+            status=status.HTTP_200_OK,
+        )
