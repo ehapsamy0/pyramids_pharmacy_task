@@ -14,8 +14,8 @@ SECRET_KEY = env(
     default="r0fctlOlyu4p7qXwDaMPuMFneZsFtp0hnAuQzqt7HafvxaHsPtsbRzzdRtUIM99w",
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]  # noqa: S104
-
+# ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]  # noqa: S104
+ALLOWED_HOSTS = ["*"]  # noqa: S104
 # CACHES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#caches
@@ -64,3 +64,47 @@ INSTALLED_APPS += ["django_extensions"]
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+
+
+
+CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_CREDENTIALS = True
+# CORS_ORIGIN_ALLOW_ALL = True
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "https://localhost:3000",
+
+    "https://localhost:3001",
+    "http://localhost:3001",
+
+    "http://localhost:3002",
+    "http://3.72.63.179",
+    "https://3.72.63.179",
+    "https://ec2-3-72-63-179.eu-central-1.compute.amazonaws.com",
+    "http://ec2-3-72-63-179.eu-central-1.compute.amazonaws.com",
+]
+CORS_ORIGIN_WHITELIST = [
+    "http://localhost:3000",
+    "https://localhost:3000",
+    "https://localhost:3001",
+    "http://localhost:3001",
+    "http://localhost:3002",
+    "http://3.72.63.179",
+    "https://3.72.63.179",
+    "https://ec2-3-72-63-179.eu-central-1.compute.amazonaws.com",
+    "http://ec2-3-72-63-179.eu-central-1.compute.amazonaws.com",
+]
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://localhost:3000",
+
+    "https://localhost:3001",
+    "http://localhost:3001",
+    "http://localhost:3002",
+    "http://3.72.63.179",
+    "https://3.72.63.179",
+    "https://ec2-3-72-63-179.eu-central-1.compute.amazonaws.com",
+    "http://ec2-3-72-63-179.eu-central-1.compute.amazonaws.com",
+]
+
