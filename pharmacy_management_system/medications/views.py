@@ -39,21 +39,16 @@ class RefillRequestListView(generics.ListAPIView):
     """
 
     serializer_class = RefillRequestSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated,IsPharmacist]
 
     def get_queryset(self):
-        user = self.request.user
-        if user.is_pharmacist:
-            status_param = self.request.query_params.get("status")
-            if status_param == "pending":
-                return RefillRequest.objects.filter(is_fulfilled=False)
-            elif status_param == "completed":
-                return RefillRequest.objects.filter(is_fulfilled=True)
-            else:
-                return RefillRequest.objects.all()
-        elif user.is_patient:
-            return RefillRequest.objects.filter(patient__user=user)
-        return RefillRequest.objects.none()
+        status_param = self.request.query_params.get("status")
+        if status_param == "pending":
+            return RefillRequest.objects.filter(is_fulfilled=False)
+        elif status_param == "completed":
+            return RefillRequest.objects.filter(is_fulfilled=True)
+        else:
+            return RefillRequest.objects.all()
 
 
 class RefillRequestUpdateView(generics.UpdateAPIView):
@@ -87,7 +82,6 @@ class RefillRequestUpdateView(generics.UpdateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# Pharmacist view: View pending refill requests
 class PendingRefillRequestListView(generics.ListAPIView):
     serializer_class = RefillRequestSerializer
     permission_classes = [IsPharmacist]

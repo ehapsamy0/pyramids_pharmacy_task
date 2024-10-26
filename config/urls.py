@@ -15,6 +15,7 @@ urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
     path("api/users/",include("pharmacy_management_system.users.urls")),
     path('api/', include('pharmacy_management_system.medications.urls')),
+    path('api/dashboard/', include('pharmacy_management_system.dashboard.urls')),
     # path('api/audit-logs/', include('audit_logs.urls')),  # If you have audit_logs URLs
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]

@@ -88,7 +88,7 @@ LOCAL_APPS = [
     "pharmacy_management_system.users",
     "pharmacy_management_system.medications",
     "pharmacy_management_system.audit_logs",
-    # Your stuff: custom apps go here
+    "pharmacy_management_system.dashboard",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
