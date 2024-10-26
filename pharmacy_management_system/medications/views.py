@@ -39,7 +39,7 @@ class RefillRequestListView(generics.ListAPIView):
     """
 
     serializer_class = RefillRequestSerializer
-    permission_classes = [permissions.IsAuthenticated,IsPharmacist]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         status_param = self.request.query_params.get("status")
