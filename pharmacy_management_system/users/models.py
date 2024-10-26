@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-
+from auditlog.registry import auditlog
 
 class User(AbstractUser):
     """
@@ -56,3 +56,8 @@ class Pharmacist(models.Model):
 
     def __str__(self):
         return f"Pharmacist: {self.user.username}"
+
+
+auditlog.register(User)
+auditlog.register(Patient)
+auditlog.register(Pharmacist)

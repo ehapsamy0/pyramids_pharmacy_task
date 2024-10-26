@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
-class MedicationListView(generics.ListAPIView):
+class MedicationListView(generics.ListCreateAPIView):
     """
     List all available medications. Accessible only by Patients.
     """
@@ -70,14 +70,6 @@ class RefillRequestUpdateView(generics.UpdateAPIView):
         refill_request.is_fulfilled = True
         refill_request.pharmacist = Pharmacist.objects.get(user=request.user)
         refill_request.save()
-        # Log the action
-        from audit_logs.models import AuditLog
-
-        AuditLog.objects.create(
-            user=request.user,
-            action="MEDICATION_FULFILL",
-            description=f"Fulfilled refill request {refill_request.id} for {refill_request.medication.name}",
-        )
         serializer = self.get_serializer(refill_request)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

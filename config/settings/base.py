@@ -82,6 +82,7 @@ THIRD_PARTY_APPS = [
     "corsheaders",
     "drf_spectacular",
     "rest_framework_simplejwt.token_blacklist",
+    "auditlog"
 ]
 
 LOCAL_APPS = [

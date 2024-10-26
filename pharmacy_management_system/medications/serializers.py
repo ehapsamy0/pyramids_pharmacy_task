@@ -26,17 +26,5 @@ class RefillRequestSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["request_date", "is_fulfilled", "pharmacist"]
 
-    def create(self, validated_data):
-        user = self.context["request"].user
-        refill_request = RefillRequest.objects.create( **validated_data)
-        # # Optionally, log the action
-        # from audit_logs.models import AuditLog
-
-        # AuditLog.objects.create(
-        #     user=user,
-        #     action="MEDICATION_REQUEST",
-        #     description=f"Requested {validated_data['quantity_requested']} of {validated_data['medication'].name}",  # noqa: E501
-        # )
-        return refill_request
 
 

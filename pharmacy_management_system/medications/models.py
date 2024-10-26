@@ -1,6 +1,7 @@
 from django.db import models
 from pharmacy_management_system.users.models import Patient
 from pharmacy_management_system.users.models import Pharmacist
+from auditlog.registry import auditlog
 
 
 class Medication(models.Model):
@@ -33,3 +34,7 @@ class RefillRequest(models.Model):
         return (
             f"Refill request for {self.medication.name} by {self.patient.user.username}"
         )
+
+
+auditlog.register(Medication, include_fields=["name", "quantity_available","is_fulfilled"])
+auditlog.register(RefillRequest)
