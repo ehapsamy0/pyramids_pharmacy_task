@@ -24,3 +24,4 @@ djangorestframework-simplejwt==5.2.2
 setuptools
 drf-standardized-errors==0.13.0
 django-auditlog
+django-filter

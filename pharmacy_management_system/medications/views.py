@@ -1,3 +1,4 @@
+from django_filters import rest_framework as filters
 from rest_framework import generics
 from rest_framework import permissions
 from rest_framework import status
@@ -7,6 +8,7 @@ from users.permissions import IsPharmacist
 
 from pharmacy_management_system.users.models import Pharmacist
 
+from .filters import RefillRequestFilter
 from .models import Medication
 from .models import RefillRequest
 from .serializers import MedicationSerializer
@@ -45,27 +47,30 @@ class RefillRequestListView(generics.ListAPIView):
     - Patients can see their own refill requests.
     """
 
+    filter_backends = [filters.DjangoFilterBackend]
     permission_classes = [permissions.IsAuthenticated]
+    filterset_class = RefillRequestFilter
+
     def get_serializer_class(self):
         if self.request.method in permissions.SAFE_METHODS:
             return RefillRequestReadSerializer
         return RefillRequestSerializer
 
-
-
     def get_queryset(self):
-        status_param = self.request.query_params.get("status")
-        if status_param == "pending":
-            return RefillRequest.objects.filter(is_fulfilled=False).select_related("medication")
-        elif status_param == "completed":
-            return RefillRequest.objects.filter(is_fulfilled=True).select_related("medication")
-        else:
+        user = self.request.user
+        if user.is_pharmacist:
+            # Pharmacist can view all requests
             return RefillRequest.objects.all().select_related("medication")
+        else:
+            # Patients only view their own requests
+            return RefillRequest.objects.filter(patient__user=user).select_related(
+                "medication"
+            )
 
 
 class RefillRequestUpdateView(generics.UpdateAPIView):
     """
-        Update a refill request to mark it as fulfilled. Accessible only by Pharmacists.
+    Update a refill request to mark it as fulfilled. Accessible only by Pharmacists.
     """
 
     queryset = RefillRequest.objects.all()
