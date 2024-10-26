@@ -53,7 +53,7 @@ class RefillRequestListView(generics.ListAPIView):
 
 class RefillRequestUpdateView(generics.UpdateAPIView):
     """
-    Update a refill request to mark it as fulfilled. Accessible only by Pharmacists.
+        Update a refill request to mark it as fulfilled. Accessible only by Pharmacists.
     """
 
     queryset = RefillRequest.objects.all()
@@ -68,6 +68,7 @@ class RefillRequestUpdateView(generics.UpdateAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         refill_request.is_fulfilled = True
+        refill_request.status = "COMPLETED"
         refill_request.pharmacist = Pharmacist.objects.get(user=request.user)
         refill_request.save()
         serializer = self.get_serializer(refill_request)
