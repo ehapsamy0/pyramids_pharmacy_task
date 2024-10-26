@@ -1,10 +1,17 @@
-from pharmacy_management_system.users.models import Pharmacist
-from rest_framework import generics, permissions
-from .models import Medication, RefillRequest
-from .serializers import MedicationSerializer, RefillRequestSerializer
-from users.permissions import IsPatient, IsPharmacist
-from rest_framework.response import Response
+from rest_framework import generics
+from rest_framework import permissions
 from rest_framework import status
+from rest_framework.response import Response
+from users.permissions import IsPatient
+from users.permissions import IsPharmacist
+
+from pharmacy_management_system.users.models import Pharmacist
+
+from .models import Medication
+from .models import RefillRequest
+from .serializers import MedicationSerializer
+from .serializers import RefillRequestReadSerializer
+from .serializers import RefillRequestSerializer
 
 
 class MedicationListView(generics.ListCreateAPIView):
@@ -38,17 +45,22 @@ class RefillRequestListView(generics.ListAPIView):
     - Patients can see their own refill requests.
     """
 
-    serializer_class = RefillRequestSerializer
     permission_classes = [permissions.IsAuthenticated]
+    def get_serializer_class(self):
+        if self.request.method in permissions.SAFE_METHODS:
+            return RefillRequestReadSerializer
+        return RefillRequestSerializer
+
+
 
     def get_queryset(self):
         status_param = self.request.query_params.get("status")
         if status_param == "pending":
-            return RefillRequest.objects.filter(is_fulfilled=False)
+            return RefillRequest.objects.filter(is_fulfilled=False).select_related("medication")
         elif status_param == "completed":
-            return RefillRequest.objects.filter(is_fulfilled=True)
+            return RefillRequest.objects.filter(is_fulfilled=True).select_related("medication")
         else:
-            return RefillRequest.objects.all()
+            return RefillRequest.objects.all().select_related("medication")
 
 
 class RefillRequestUpdateView(generics.UpdateAPIView):

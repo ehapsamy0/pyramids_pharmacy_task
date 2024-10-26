@@ -28,3 +28,24 @@ class RefillRequestSerializer(serializers.ModelSerializer):
 
 
 
+
+
+class RefillRequestReadSerializer(serializers.ModelSerializer):
+    medication = MedicationSerializer()
+    class Meta:
+        model = RefillRequest
+        fields = [
+            "id",
+            "patient",
+            "medication",
+            "quantity_requested",
+            "request_date",
+            "is_fulfilled",
+            "pharmacist",
+        ]
+        read_only_fields = ["request_date", "is_fulfilled", "pharmacist"]
+
+
+
+
+
