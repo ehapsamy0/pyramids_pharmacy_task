@@ -5,6 +5,11 @@ This is the backend for the **Pharmacy Management System**, built with Django an
 
 ---
 
+
+## Entity Relationship Diagram (ERD):
+![alt erd](https://github.com/ehapsamy0/pyramids_pharmacy_task/blob/main/my_project_schema.png)
+
+
 ## Features
 
 ### User Management
