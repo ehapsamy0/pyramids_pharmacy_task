@@ -21,7 +21,7 @@ django-cors-headers==4.5.0  # https://github.com/adamchainz/django-cors-headers
 # DRF-spectacular for api documentation
 drf-spectacular==0.27.2  # https://github.com/tfranzel/drf-spectacular
 djangorestframework-simplejwt==5.2.2
-setuptools
+setuptools==75.2.0
 drf-standardized-errors==0.13.0
-django-auditlog
-django-filter
+django-auditlog==3.0.0
+django-filter==24.3

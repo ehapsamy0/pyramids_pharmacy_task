@@ -83,7 +83,7 @@ THIRD_PARTY_APPS = [
     "drf_spectacular",
     "rest_framework_simplejwt.token_blacklist",
     "auditlog",
-    "django_filters"
+    "django_filters",
 ]
 
 LOCAL_APPS = [
@@ -91,6 +91,7 @@ LOCAL_APPS = [
     "pharmacy_management_system.medications",
     "pharmacy_management_system.audit_logs",
     "pharmacy_management_system.dashboard",
+
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
