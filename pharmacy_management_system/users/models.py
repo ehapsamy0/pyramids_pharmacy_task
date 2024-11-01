@@ -15,13 +15,11 @@ class User(AbstractUser):
     name = models.CharField(_("Name of User"), blank=True, max_length=255)
     is_patient = models.BooleanField(default=True)  # Default is_patient to True
     is_pharmacist = models.BooleanField(default=False)
-
+    is_admin = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
-        # Ensure that if a user is marked as a pharmacist, they are not a patient
         if self.is_pharmacist:
             self.is_patient = False
-        # Ensure that if a user is marked as a patient, they are not a pharmacist
         if self.is_patient:
             self.is_pharmacist = False
         super().save(*args, **kwargs)
@@ -42,7 +40,7 @@ class Patient(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="patient_profile"
     )
-    insurance_number = models.CharField(max_length=50, unique=True)
+    insurance_number = models.CharField(max_length=50)
 
     def __str__(self):
         return f"Patient: {self.user.username}"
@@ -52,7 +50,7 @@ class Pharmacist(models.Model):
     user = models.OneToOneField(
         User, on_delete=models.CASCADE, related_name="pharmacist_profile"
     )
-    license_number = models.CharField(max_length=50, unique=True)
+    license_number = models.CharField(max_length=50)
 
     def __str__(self):
         return f"Pharmacist: {self.user.username}"

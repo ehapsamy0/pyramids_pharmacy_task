@@ -35,6 +35,7 @@ class UserAdmin(auth_admin.UserAdmin):
                     "user_permissions",
                     "is_patient",
                     "is_pharmacist",
+                    "is_admin",
                 ),
             },
         ),

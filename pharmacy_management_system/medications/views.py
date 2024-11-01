@@ -49,7 +49,7 @@ class RefillRequestListView(generics.ListAPIView):
 
     filter_backends = [filters.DjangoFilterBackend]
     permission_classes = [permissions.IsAuthenticated]
-    filterset_class = RefillRequestFilter
+    filterset_class = RefillRequestReadSerializer
 
     def get_serializer_class(self):
         if self.request.method in permissions.SAFE_METHODS:
@@ -93,7 +93,7 @@ class RefillRequestUpdateView(generics.UpdateAPIView):
 
 
 class PendingRefillRequestListView(generics.ListAPIView):
-    serializer_class = RefillRequestSerializer
+    serializer_class = RefillRequestReadSerializer
     permission_classes = [IsPharmacist]
 
     def get_queryset(self):
@@ -102,7 +102,7 @@ class PendingRefillRequestListView(generics.ListAPIView):
 
 # Pharmacist view: View completed refill requests
 class CompletedRefillRequestListView(generics.ListAPIView):
-    serializer_class = RefillRequestSerializer
+    serializer_class = RefillRequestReadSerializer
     permission_classes = [IsPharmacist]
 
     def get_queryset(self):

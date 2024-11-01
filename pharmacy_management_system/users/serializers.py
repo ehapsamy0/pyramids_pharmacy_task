@@ -12,11 +12,11 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["username", "email", "name", "role"]
 
     def get_role(self, obj):
-        if obj.is_patient:
-            return "patient"
-        elif obj.is_pharmacist:
-            return "pharmacist"
-        return "unknown"
+        # if obj.is_patient:
+        #     return "patient"
+        # elif obj.is_pharmacist:
+        #     return "pharmacist"
+        return "admin"
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):

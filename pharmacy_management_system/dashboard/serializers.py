@@ -4,6 +4,7 @@ from pharmacy_management_system.medications.models import RefillRequest
 
 
 class RefillRequestSummarySerializer(serializers.ModelSerializer):
+    patient = serializers.CharField(source="patient.user.username")
     class Meta:
         model = RefillRequest
         fields = [

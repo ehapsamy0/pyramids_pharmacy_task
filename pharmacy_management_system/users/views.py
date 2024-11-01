@@ -41,10 +41,11 @@ class UserRegistrationView(generics.CreateAPIView):
             {
                 "user": serializer.data,  # User data
                 "refresh": str(refresh),  # Refresh token
-                "access": str(access),    # Access token
+                "access": str(access),  # Access token
             },
             status=status.HTTP_201_CREATED,
         )
+
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     class CustomTokenObtainPairViewOutputSerializer(serializers.Serializer):
@@ -60,7 +61,13 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             # Adding custom claims (role and username)
             token["name"] = user.name
             token["username"] = user.username
-            token["role"] = "patient" if user.is_patient else "pharmacist"
+            token["role"] = (
+                "admin"
+                if user.is_admin
+                else "patient"
+                if user.is_patient
+                else "pharmacist"
+            )
             return token
 
     serializer_class = TokenSerializer
@@ -75,7 +82,11 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         # Adding role and username in response
         response.data.update(
             {
-                "role": "patient" if user.is_patient else "pharmacist",
+                "role": "admin"
+                if user.is_admin
+                else "patient"
+                if user.is_patient
+                else "pharmacist",
                 "username": user.username,
             }
         )
